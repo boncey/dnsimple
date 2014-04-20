@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+require 'dnsimple'
+
+DNSimple::Client.load_credentials
+
+module DNSimple
+  class Record
+    def to_s
+      case @record_type
+      when "A" then "#{@record_type} record: \"#{@name}\" -> #{@content} (ttl: #{@ttl})"
+      when "SOA" then "#{@record_type} #{@content} (ttl: #{@ttl})"
+      when "CNAME" then "#{@record_type} record: #{@name} -> #{@content} (ttl: #{@ttl})"
+      when "MX" then "#{@record_type} record: #{@content} (prio: #{@prio}, ttl: #{@ttl})"
+      when "TXT" then "#{@record_type} record: #{@content} (ttl: #{@ttl})"
+      when "SPF" then "#{@record_type} record: #{@content} (ttl: #{@ttl})"
+      when "SRV" then "#{@record_type} record: #{@name} -> #{@content} (prio: #{@prio}, content: #{@content}, ttl: #{@ttl})"
+      when "NS" then "#{@record_type} record: #{@content} (ttl: #{@ttl})"
+      when "NAPTR" then "#{@record_type} record: #{@name} -> #{t.data} (ttl: #{@ttl})"
+      else
+        "Unrecognised! #{@record_type} record: name: #{@name} (prio: #{@prio}, content: #{@content}, ttl: #{@ttl})"
+      end
+    end
+  end
+end
+
+def cat
+  DNSimple::Domain.all.each do |domain|
+    puts "==============================="
+    puts "Domain #{domain.name}"
+    puts "==============================="
+    DNSimple::Record.all(domain).each do |record|
+      puts record
+    end
+    puts
+    puts
+  end
+
+end
+
+cat
